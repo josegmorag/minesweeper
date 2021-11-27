@@ -6,34 +6,54 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css">
     <link rel="icon" href="images/bom4.png"  />
      <title>Minesweeper</title>
-    <script src="js/classes.js"></script>
 </head>
 <style>
   * {
-  box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+     overflow: hidden;
   }  
 
   body {
-    background-color: lightblue;
-    display:flex;
+    background-image: url(/images/wood-texture.svg) ;
+    background-repeat: no-repeat ;
+    background-size: cover;
+   
     justify-content: center;
     align-items: center;
+   
+    height: 100vh;
     
   }
+
+ 
   .container{
     display:flex;
     flex-direction: column;
     align-items: center;
-    
+    color: bisque;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 
   }
   canvas {
-     border-style: ridge; border-width: 10px; border-color:#bfbfbf;
+     border-style: ridge; border-width: 10px; border-color:#bfbfbf; background-color: #bfbfbf;
   }
+  
 
   #gamearea{
       padding-top: 20px;
   }
+
+  .custom{
+    display: none;
+  }
+
+  @media only screen and (max-width: 750px) {
+     #custom, #lblCustom, #customColumns {
+       display: none;
+     }
+  }    
 
   
 </style>
@@ -42,206 +62,32 @@
         <h1>Minesweeper</h1>
         <div >
             <input type="radio"  name="level" id="principiante" value="principiante"/>
-            <label for="principiante"><i class="fas fa-baby"></i></label>
+            <label for="principiante">Beginner</label>
 
             <input type="radio"  name="level" id="intermedio" value="intermedio"/>
-            <label for="never"><i class="fas fa-child"></i></label>
+            <label for="intermedio">Intermediate</label>
             
-
             <input type="radio"  name="level" id="avanzado" value="avanzado"/>
-            <label for="change"><i class="fas fa-user-graduate"></i></label>
+            <label for="avanzado">Expert</label>
+            
+            <input type="radio"  name="level" id="custom" value="custom"/>
+            <label for="custom" id="lblCustom">Custom</label>
+            
+            <label class="custom" for="customColumns">Columns</label>
+            <input type="number" id="customColumns" class="custom" min="9" max="99" value="9"/>
+
+            <label class="custom" for="customRows">Rows</label>
+            <input type="number" id="customRows" class="custom" min="9" max="99" value="9"/>
+
+            <label class="custom" for="customBombs">Bombs</label>
+            <input type="number" id="customBombs" class="custom" min="10" max="100" value="10"/>
         </div>
         <div id="gamearea" ></div>
         
         
     </div>
    
+    <script src="js/classes.js"></script>
 
-    <script>
-        let number1 = 0;
-        let number2 = 0;
-        let number3 = 0;
-        let descubiertas =0;
-        let running = false;
-        let primera = true;
-        let face = 1;
-        let img = new Image();
-        let rad = document.getElementsByName("level");
-        Array.from(document.getElementsByName("level")).map(v=>addEventListener("change",new_game,false));
-        rad[0].checked = true;
-       
-        let tablero = new Tablero(8,8,10);
-        let frame =  new simplegui(tablero.columna*16,tablero.fila*16+26);
-        let interval;
-        let offsetx={'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':0,'11':2,'12':4};
-        let offsety={0:0,1:16};
-        
-
-        img.src = "images/sprite.png"
-        window.addEventListener("load", startGame,false);
-        
-        function new_game(){
-            primera = true;
-            running = false;
-            clearInterval(interval);
-            number1=0;
-            number2=0;
-            number3=0;
-            descubiertas=0;
-            face = 1
-
-            let canvas = document.getElementById("frame");
-            document.getElementById("gamearea").removeChild(canvas);
-
-            let value = 0;
-            for (i=0;i<=rad.length-1;i++){
-                if (rad[i].checked){
-                   value = i; 
-                }
-            }
-            switch(value){
-                case 0:
-                  tablero = new Tablero(8,8,10);
-                  break;
-                case 1:
-                  tablero = new Tablero(16,16,40);
-                  break;
-                case 2:
-                  tablero = new Tablero(16,30,99);
-            }
-            
-            frame =  new simplegui(tablero.columna*16,tablero.fila*16+26);
-            startGame();
-        }
-      		
-		function startGame() {
-            frame.create();
-            frame.draw();
-            
-           interval= setInterval(() => {
-                tick();
-                frame.draw();
-            }, 1000);
-        } 
-
-        function tick(){
-            if ((running) && (number1 < 9 || number2 < 9 || number3 < 9)){
-                number1++;
-                if (number1>9) {
-                    number1 =0;
-                    number2++;
-                    if (number2>9){
-                    number2=0;
-                    number3++;
-                    }
-                }
-            }
-           
-        }
-        
-       function destape(i,j){
-          tablero.destapadas[i][j] = true;
-          for (var k=i-1;k<=i+1;k++) 
-              for (var l=j-1;l<=j+1;l++) 
-                  if (k >=0 && l >= 0 && k < tablero.columna && l <tablero.fila) {
-                     if (tablero.valor[k][l] == '0' && !tablero.destapadas[k][l]) {
-                        destape(k,l);
-                     }
-                     else {
-                        if (!tablero.destapadas[k][l]) {
-                             tablero.destapadas[k][l] = true;
-                             descubiertas++;
-                        }
-                     }   
-                }
-           descubiertas++;
-        }
-        function mouseclick(event){
-            if (event.offsetY > 25 ) {
-              
-                
-                if (primera){
-                   tablero.carga_minas(event);
-                   primera = false; 
-                   running = true;
-                }
-
-                if (running){
-                    face = 2;
-                    jugar(event);
-                    frame.draw();
-                }
-            }
-            else {
-                if (event.offsetX > (tablero.columna*16)/2-13 && event.offsetX < (tablero.columna*16)/2+13) {
-                    
-                  //  face = 0;
-                  //  frame.draw();
-                    new_game();
-                   
-                }
-            }    
-
-        }
-       // function process_touchstar(evt){
-       //       evt.preventDefault();
-       //       face=0;
-       //       frame.draw();
-       // }
-       function mouseup(event){
-              if (face < 3){
-                  face = 1;
-              }    
-              frame.draw();
-       }
-            
-       function jugar(event){
-            
-            let i = Math.floor(event.offsetX / 16);
-            let j = Math.floor((event.offsetY-26) / 16 );
-            
-            if (!tablero.destapadas[i][j] && running){
-                    
-                    if (tablero.valor[i][j] == '0') {
-                        destape(i,j);
-                    }
-                    else{
-                        if (tablero.valor[i][j] !='9'){
-                            tablero.destapadas[i][j]=true;
-                           
-                            descubiertas++;
-                           
-                            if (descubiertas == (tablero.columna * tablero.fila) - tablero.bombs){
-                                for (let i=0;i<tablero.columna;i++) {
-                                    for(let j=0;j<tablero.fila;j++) {
-                                        if (tablero.valor[i][j] == '9'){
-                                            tablero.destapadas[i][j]=true;
-                                            tablero.valor[i][j] = '12';
-                                            face = 4;
-                                            running = false;
-                                        }
-                                    }
-                                }    
-                            }
-                        }
-                        else{
-                            for (let i=0;i<tablero.columna;i++) {
-                                for(let j=0;j<tablero.fila;j++) {
-                                    if (tablero.valor[i][j] == '9'){
-                                        tablero.destapadas[i][j] = true;
-                                    }
-                                }
-                            }
-                            tablero.valor[i][j] = '11';
-                            face=3;
-                            running=false;
-                        }
-                        
-                    }
-           }
-            
-       }
-        
-    </script>
-</body>
+    </body>
 </html>
