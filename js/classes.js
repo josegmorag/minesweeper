@@ -231,6 +231,7 @@ function destape(i,j){
              }   
         }
    descubiertas++;
+  
 }
 function mouseclick(event){
     if (event.buttons === 1){
@@ -318,6 +319,7 @@ function jugar(event){
                    
                     descubiertas++;
 
+  
                     if (descubiertas === (tablero.columna * tablero.fila) - tablero.bombs){
                         for (let i=0;i<tablero.columna;i++) {
                             for(let j=0;j<tablero.fila;j++) {
