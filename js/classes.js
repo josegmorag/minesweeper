@@ -318,20 +318,7 @@ function jugar(event){
                     tablero.destapadas[i][j]=true;
                    
                     descubiertas++;
-
-  
-                    if (descubiertas === (tablero.columna * tablero.fila) - tablero.bombs){
-                        for (let i=0;i<tablero.columna;i++) {
-                            for(let j=0;j<tablero.fila;j++) {
-                                if (tablero.valor[i][j] == '9'){
-                                    tablero.destapadas[i][j]=true;
-                                    tablero.valor[i][j] = '12';
-                                    face = 4;
-                                    running = false;
-                                }
-                            }
-                        }    
-                    }
+                    
                 }
                 else{
                     for (let i=0;i<tablero.columna;i++) {
@@ -349,6 +336,19 @@ function jugar(event){
                     running=false;
                 }
                 
+            }
+
+            if (descubiertas === (tablero.columna * tablero.fila) - tablero.bombs){
+                for (let i=0;i<tablero.columna;i++) {
+                    for(let j=0;j<tablero.fila;j++) {
+                        if (tablero.valor[i][j] == '9'){
+                            tablero.destapadas[i][j]=true;
+                            tablero.valor[i][j] = '12';
+                            face = 4;
+                            running = false;
+                        }
+                    }
+                }    
             }
    }
     
