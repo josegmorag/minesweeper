@@ -21,14 +21,18 @@ class simplegui {
         let canvas = document.getElementById('frame')
         let ctx = canvas.getContext("2d");
         let strbomb = tablero.bombs.toString();
+
+        if (strbomb.length < 3) {
+            strbomb = "0" + strbomb;
+        }
        
         ctx.beginPath();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
        
         if (strbomb.length > 1) {
-           ctx.drawImage(img,0,32,13,26,0,0,13,27);
-		   ctx.drawImage(img,parseInt(strbomb[0]) * 13,32,13,26,13,0,13,27);
-           ctx.drawImage(img,parseInt(strbomb[1]) * 13,32,13,26,26,0,13,27);
+           ctx.drawImage(img,parseInt(strbomb[0]) * 13,32,13,26,0,0,13,27);
+		   ctx.drawImage(img,parseInt(strbomb[1]) * 13,32,13,26,13,0,13,27);
+           ctx.drawImage(img,parseInt(strbomb[2]) * 13,32,13,26,26,0,13,27);
         }
         else{
             ctx.drawImage(img,0,32,13,26,0,0,13,27);
