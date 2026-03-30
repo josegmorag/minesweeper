@@ -12,37 +12,91 @@
      margin: 0;
      padding: 0;
      box-sizing: border-box;
-     overflow: hidden;
   }  
 
   body {
-    background-image: url(./images/wood-texture.svg) ;
-    background-repeat: no-repeat ;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) no-repeat center center fixed;
     background-size: cover;
-   
     justify-content: center;
     align-items: center;
-   
-    height: 100vh;
-    
+    min-height: 100vh;
+    display: flex;
   }
 
- 
   .container{
-    display:flex;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    color: bisque;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: #f1f5f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
 
+  h1 {
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   }
+
+  .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+  }
+
+  .controls label {
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+  }
+
+  .controls input[type="radio"] {
+      cursor: pointer;
+      accent-color: #3b82f6;
+      width: 1.2rem;
+      height: 1.2rem;
+  }
+
+  input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #f1f5f9;
+      font-size: 1rem;
+  }
+
   canvas {
-     border-style: ridge; border-width: 10px; border-color:#bfbfbf; background-color: #bfbfbf;
+     border-style: ridge; 
+     border-width: 10px; 
+     border-color: #bfbfbf; 
+     background-color: #bfbfbf;
+     max-width: 95vw;
+     max-height: 70vh;
+     object-fit: contain;
+     touch-action: none;
+     user-select: none;
+     border-radius: 4px;
+     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   }
-  
 
   #gamearea{
       padding-top: 20px;
+      display: flex;
+      justify-content: center;
+      width: 100%;
   }
 
   .custom{
@@ -50,30 +104,40 @@
   }
 
   @media only screen and (max-width: 750px) {
-     #custom, #lblCustom, #customColumns {
+     #custom, #lblCustom {
        display: none;
+     }
+     body {
+         overflow: hidden; /* Prevent pull down refresh on mobile */
      }
   }    
 
-  
 </style>
 <body>
     <div class="container">
         <h1>Minesweeper</h1>
-        <div >
-            <input type="radio"  name="level" id="principiante" value="principiante"/>
-            <label for="principiante">Beginner</label>
+        <div class="controls">
+            <label for="principiante">
+                <input type="radio" name="level" id="principiante" value="principiante"/>
+                Beginner
+            </label>
 
-            <input type="radio"  name="level" id="intermedio" value="intermedio"/>
-            <label for="intermedio">Intermediate</label>
+            <label for="intermedio">
+                <input type="radio" name="level" id="intermedio" value="intermedio"/>
+                Intermediate
+            </label>
             
-            <input type="radio"  name="level" id="avanzado" value="avanzado"/>
-            <label for="avanzado">Expert</label>
+            <label for="avanzado">
+                <input type="radio" name="level" id="avanzado" value="avanzado"/>
+                Expert
+            </label>
             
-            <input type="radio"  name="level" id="custom" value="custom"/>
-            <label for="custom" id="lblCustom">Custom</label>
+            <label for="custom" id="lblCustom">
+                <input type="radio" name="level" id="custom" value="custom"/>
+                Custom
+            </label>
             
-            <label class="custom" for="customColumns">Columns</label>
+            <label class="custom" for="customColumns">Cols</label>
             <input type="number" id="customColumns" class="custom" min="9" max="99" value="9"/>
 
             <label class="custom" for="customRows">Rows</label>

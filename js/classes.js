@@ -15,6 +15,9 @@ class simplegui {
         canvas.addEventListener("mouseup",mouseup,false);
         canvas.addEventListener("contextmenu",mouseright,false); 
         
+        canvas.addEventListener("touchstart",ontouchstart, {passive: false});
+        canvas.addEventListener("touchmove",ontouchmove, {passive: false});
+        canvas.addEventListener("touchend",ontouchend, {passive: false});
     }
     draw(){
        
@@ -88,10 +91,10 @@ class Tablero{
         }
 
     }
-    carga_minas(event){
+    carga_minas(pos){
        let total = 0;
-       let x = Math.floor(event.offsetX / 16);
-       let y = Math.floor((event.offsetY - 26) / 16 );
+       let x = Math.floor(pos.x / 16);
+       let y = Math.floor((pos.y - 26) / 16 );
        
        for (let i=x-1; i<=x+1;i++){
            for(let j=y-1;j<=y+1;j++){
@@ -244,33 +247,36 @@ function destape(i,j){
    descubiertas++;
   
 }
-function mouseclick(event){
-    if (event.buttons === 1){
-        if (event.offsetY > 25 ) {
+function processAction(pos, isRightClick){
+    let offsetX = pos.x;
+    let offsetY = pos.y;
+    
+    if (!isRightClick){
+        if (offsetY > 25 ) {
         
             
             if (primera){
-            tablero.carga_minas(event);
+            tablero.carga_minas(pos);
             primera = false; 
             running = true;
             }
 
             if (running){
                 face = 2;
-                jugar(event);
+                jugar(pos);
                 frame.draw();
             }
         }
         else {
-            if (event.offsetX > (tablero.columna*16)/2-13 && event.offsetX < (tablero.columna*16)/2+13) {
+            if (offsetX > (tablero.columna*16)/2-13 && offsetX < (tablero.columna*16)/2+13) {
                 new_game();
             }
         }  
     }
     else {
-        if (event.buttons === 2 && event.offsetY > 25 && running && tablero.bombs > 0){
-            let i = Math.floor(event.offsetX / 16);
-            let j = Math.floor((event.offsetY-26) / 16 );
+        if (offsetY > 25 && running && tablero.bombs > 0){
+            let i = Math.floor(offsetX / 16);
+            let j = Math.floor((offsetY-26) / 16 );
 
             if (!tablero.destapadas[i][j]){
                     tablero.valor[i][j] = '12'
@@ -306,6 +312,80 @@ function mouseclick(event){
 
 }
 
+function getMousePos(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    var scaleX = canvas.width / rect.width;
+    var scaleY = canvas.height / rect.height;
+    
+    var clientX = event.clientX;
+    var clientY = event.clientY;
+    
+    if (event.type.startsWith('touch') && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+    } else if (event.type === 'touchend' && event.changedTouches.length > 0) {
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+    }
+
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
+
+let touchTimer = null;
+let touchMoved = false;
+let lastTouchPos = null;
+
+function ontouchstart(event) {
+    if(event.touches.length > 1) return;
+    event.preventDefault();
+    touchMoved = false;
+    lastTouchPos = getMousePos(document.getElementById('frame'), event);
+    
+    face = 2;
+    frame.draw();
+    
+    touchTimer = setTimeout(() => {
+        if (!touchMoved && lastTouchPos) {
+            processAction(lastTouchPos, true);
+            frame.draw();
+            if (navigator.vibrate) navigator.vibrate(50);
+            touchTimer = null;
+        }
+    }, 400);
+}
+
+function ontouchmove(event) {
+    event.preventDefault();
+    touchMoved = true;
+    if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+        face = 1;
+        frame.draw();
+    }
+}
+
+function ontouchend(event) {
+    event.preventDefault();
+    if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+        if (!touchMoved && lastTouchPos) {
+            processAction(lastTouchPos, false);
+        }
+    }
+    face = 1;
+    frame.draw();
+}
+
+function mouseclick(event){
+    let pos = getMousePos(document.getElementById('frame'), event);
+    processAction(pos, event.buttons === 2 || event.which === 3);
+}
+
 function mouseup(event){
       if (face < 3){
           face = 1;
@@ -318,10 +398,10 @@ function mouseright(event){
    
 }
     
-function jugar(event){
+function jugar(pos){
     
-    let i = Math.floor(event.offsetX / 16);
-    let j = Math.floor((event.offsetY-26) / 16 );
+    let i = Math.floor(pos.x / 16);
+    let j = Math.floor((pos.y-26) / 16 );
     
     if (!tablero.destapadas[i][j] && running){
             
