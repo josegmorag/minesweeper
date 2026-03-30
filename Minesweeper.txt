@@ -1,0 +1,119 @@
+Cambio 1 lineas 96-102 
+--------
+
+// ❌ CÓDIGO ANTERIOR
+for (let i=x-1; i<=x+1;i++){
+    for(let j=y-1;j<=y+1;j++){
+       if (i != -1 && j != -1 && i < 8 && j < 8){
+          this.destapadas[i][j] = true;
+       }
+    }
+}
+
+// ✅ CÓDIGO NUEVO
+for (let i=x-1; i<=x+1;i++){
+    for(let j=y-1;j<=y+1;j++){
+       if (i >= 0 && j >= 0 && i < this.columna && j < this.fila){
+          this.destapadas[i][j] = true;
+       }
+    }
+}
+
+
+Cambio 2 lineas 114-120
+--------
+
+// ❌ CÓDIGO ANTERIOR
+for (let i=x-1; i<=x+1;i++){
+    for(let j=y-1;j<=y+1;j++){
+       if (i != -1 && j != -1 && i <8 && j<8){
+          this.destapadas[i][j] = false;
+       }
+     }
+ }
+
+// ✅ CÓDIGO NUEVO
+for (let i=x-1; i<=x+1;i++){
+    for(let j=y-1;j<=y+1;j++){
+       if (i >= 0 && j >= 0 && i < this.columna && j < this.fila){
+          this.destapadas[i][j] = false;
+       }
+     }
+ }
+
+
+Cambio 3 linea 93
+--------
+
+// ❌ CÓDIGO ANTERIOR
+let x = Math.ceil(event.offsetX / 16);
+
+// ✅ CÓDIGO NUEVO
+let x = Math.floor(event.offsetX / 16);
+
+
+Cambio 4 lineas 282-288
+--------
+
+// ❌ CÓDIGO ANTERIOR
+else {
+     if (tablero.valor[i][j] == '12'){
+          tablero.destapadas[i][j] = false;
+          tablero.bombs++;
+          descubiertas--;
+     }
+}
+
+// ✅ CÓDIGO NUEVO
+else {
+     if (tablero.valor[i][j] == '12'){
+          tablero.destapadas[i][j] = false;
+          tablero.bombs++;
+          descubiertas--;
+          if (tablero.isBomb[i][j]) {
+              tablero.clearBombs++;
+          }
+     }
+}
+
+
+Cambio 5 linea 376
+--------
+
+// ❌ CÓDIGO ANTERIOR
+Array.from(document.getElementsByName("level")).map(v=>addEventListener("change",new_game,false));
+
+// ✅ CÓDIGO NUEVO
+Array.from(document.getElementsByName("level")).map(v=>v.addEventListener("change",new_game,false));
+
+
+Cambio 6 linea 189
+--------
+
+// ❌ CÓDIGO ANTERIOR
+case 3:
+   for (let i=0; i < customs.length; i++){
+         customs[i].style.display = "inline";
+    }
+   tablero = new Tablero(parseInt(customs[1].value),parseInt(customs[3].value),parseInt(customs[5].value));
+   break;
+
+// ✅ CÓDIGO NUEVO
+case 3:
+    for (let i=0; i < customs.length; i++){
+          customs[i].style.display = "inline";
+     }
+    let cols = parseInt(customs[1].value);
+    let fils = parseInt(customs[3].value);
+    let bom = parseInt(customs[5].value);
+    
+    // Evita el bucle: las bombas no pueden superar las casillas totales menos tu área segura inicial (9)
+    let maxBombas = (cols * fils) - 9;
+    if (bom > maxBombas) { bom = maxBombas; }
+    
+    tablero = new Tablero(cols, fils, bom);
+    break;
+
+
+
+
