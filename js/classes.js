@@ -90,12 +90,12 @@ class Tablero{
     }
     carga_minas(event){
        let total = 0;
-       let x = Math.ceil(event.offsetX / 16);
+       let x = Math.floor(event.offsetX / 16);
        let y = Math.floor((event.offsetY - 26) / 16 );
        
        for (let i=x-1; i<=x+1;i++){
            for(let j=y-1;j<=y+1;j++){
-              if (i != -1 && j != -1 && i < 8 && j < 8){
+              if (i >= 0 && j >= 0 && i < this.columna && j < this.fila){
                  this.destapadas[i][j] = true;
               }
            }
@@ -113,7 +113,7 @@ class Tablero{
 
        for (let i=x-1; i<=x+1;i++){
            for(let j=y-1;j<=y+1;j++){
-              if (i != -1 && j != -1 && i <8 && j<8){
+              if (i >= 0 && j >= 0 && i < this.columna && j < this.fila){
                  this.destapadas[i][j] = false;
               }
             }
@@ -129,7 +129,7 @@ class Tablero{
        let contador= 0;
        for (let i=x-1;i<=x+1;i++){
            for (let j=y-1;j<=y+1;j++){
-               if (i !=-1 && j !=-1 && i !=this.columna && j != this.fila && this.valor[x][y] != "9"){
+               if ((i !=-1 && j !=-1 ) && (i !=this.columna && j != this.fila) && this.valor[x][y] != "9"){
                   if (this.valor[i][j] == "9"){
                       contador++;
                   }       
@@ -186,7 +186,14 @@ function new_game(){
                  customs[i].style.display = "inline";
                 
             }
-           tablero = new Tablero(parseInt(customs[1].value),parseInt(customs[3].value),parseInt(customs[5].value));
+           let cols = parseInt(customs[1].value);
+           let fils = parseInt(customs[3].value);
+           let bom = parseInt(customs[5].value);
+           
+           let maxBombas = (cols * fils) - 9;
+           if (bom > maxBombas) { bom = maxBombas; }
+           
+           tablero = new Tablero(cols, fils, bom);
            break;
     }
     
@@ -284,6 +291,10 @@ function mouseclick(event){
                       tablero.destapadas[i][j] = false;
                       tablero.bombs++;
                       descubiertas--;
+                      
+                      if (tablero.isBomb[i][j]) {
+                          tablero.clearBombs++;
+                      }
                  }
                     
             }
@@ -373,7 +384,7 @@ let offsetx={'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':0,'10':1,
 let offsety={0:0,1:16};
 let img = new Image();
 
-Array.from(document.getElementsByName("level")).map(v=>addEventListener("change",new_game,false));
+Array.from(document.getElementsByName("level")).map(v=>v.addEventListener("change",new_game,false));
 rad[0].checked = true;
 
 img.src = "images/sprite.png"
