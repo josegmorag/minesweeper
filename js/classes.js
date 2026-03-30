@@ -163,7 +163,6 @@ function new_game(){
     const customs = document.getElementsByClassName('custom');  
     for (let i=0; i < customs.length; i++){
         customs[i].style.display = "none";
-        customs[i].addEventListener("input",null,false);
     }
     
     
@@ -363,7 +362,7 @@ function ontouchmove(event) {
     if (touchTimer) {
         clearTimeout(touchTimer);
         touchTimer = null;
-        face = 1;
+        if (face < 3) face = 1;
         frame.draw();
     }
 }
@@ -377,7 +376,7 @@ function ontouchend(event) {
             processAction(lastTouchPos, false);
         }
     }
-    face = 1;
+    if (face < 3) face = 1;
     frame.draw();
 }
 
@@ -465,6 +464,13 @@ let offsety={0:0,1:16};
 let img = new Image();
 
 Array.from(document.getElementsByName("level")).map(v=>v.addEventListener("change",new_game,false));
+Array.from(document.getElementsByClassName("custom")).forEach(el => {
+    if (el.tagName === 'INPUT') {
+        el.addEventListener("change", () => {
+            if (rad[3].checked) new_game();
+        });
+    }
+});
 rad[0].checked = true;
 
 img.src = "images/sprite.png"
