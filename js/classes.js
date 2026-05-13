@@ -343,7 +343,9 @@ function ontouchstart(event) {
     touchMoved = false;
     lastTouchPos = getMousePos(document.getElementById('frame'), event);
     
-    face = 2;
+    if (face < 3) {
+        face = 2;
+    }
     frame.draw();
     
     touchTimer = setTimeout(() => {
